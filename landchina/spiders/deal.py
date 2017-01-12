@@ -4,7 +4,6 @@ import datetime
 from scrapy.spiders import Spider
 from scrapy.http import Request
 from selenium.common.exceptions import NoSuchElementException
-from selenium import webdriver
 
 from landchina.items import DealResult
 from landchina.settings import BASE_URL, PROVINCE_BASE, PROVINCE_MAP
@@ -22,8 +21,8 @@ class Province(object):
 
 class Mapper(object):
 
-    def __init__(self):
-        self.driver = webdriver.PhantomJS()
+    def __init__(self, driver):
+        self.driver = driver
 
     def iterprvn(self, prvns=None):
         if not prvns:
@@ -118,8 +117,12 @@ class LandDealSpider(Spider):
     name = "landdeal"
     allowed_domains = ["landchina.com"]
 
+    def __init__(self):
+        self.driver = None
+        super(LandDealSpider, self).__init__()
+
     def start_requests(self):
-        mapper = Mapper()
+        mapper = Mapper(self.driver)
         return mapper.iterreq()
 
     def parse(self, response):

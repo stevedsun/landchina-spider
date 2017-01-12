@@ -1,5 +1,6 @@
 # coding: utf-8
 import xlwt
+from selenium import webdriver
 
 XLSNAME = 'result'
 
@@ -29,9 +30,11 @@ class SaveExcelPipeline(object):
         self.sheet.write(self.row, 16,u'约定竣工时间')
         self.sheet.write(self.row, 17,u'合同签订日期')
         self.xls.save(XLSNAME + '.xls')
+        spider.driver = webdriver.PhantomJS()
 
-    # def close_spider(self, spider):
-    #     self.xls.save(XLSNAME + '.xls')
+
+    def close_spider(self, spider):
+        spider.driver.quit()
 
     def process_item(self, item, spider):
         self.text_to_excel(item)
