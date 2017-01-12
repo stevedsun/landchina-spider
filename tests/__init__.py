@@ -1,1 +1,1 @@
-from test_page import *
+from test_url import *
