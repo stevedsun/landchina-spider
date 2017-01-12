@@ -7,7 +7,7 @@ from selenium.common.exceptions import NoSuchElementException
 from selenium import webdriver
 
 from landchina.items import DealResult
-from landchina.settings import BASE_URL, PROVINCE_BASE, PROVINCE_MAP, RES_MAPPING
+from landchina.settings import BASE_URL, PROVINCE_BASE, PROVINCE_MAP
 
 
 class Province(object):
@@ -123,22 +123,43 @@ class LandDealSpider(Spider):
         return mapper.iterreq()
 
     def parse(self, response):
-        cells = iter(response.css('.theme span'))
-        c = cells.next()
-        print dir(c), dir(c.text())
-        import sys
-        sys.exit()
         item = DealResult()
+        domain = response.css('#mainModuleContainer_1855_1856_ctl00_ctl00_p1_f1_r1_c2_ctrl::text').extract()
+        name = response.css('#mainModuleContainer_1855_1856_ctl00_ctl00_p1_f1_r17_c2_ctrl::text').extract()
+        addr = response.css('#mainModuleContainer_1855_1856_ctl00_ctl00_p1_f1_r16_c2_ctrl::text').extract()
+        size = response.css('#mainModuleContainer_1855_1856_ctl00_ctl00_p1_f1_r2_c2_ctrl::text').extract()
+        src = response.css('#mainModuleContainer_1855_1856_ctl00_ctl00_p1_f1_r2_c4_ctrl::text').extract()
+        use = response.css('#mainModuleContainer_1855_1856_ctl00_ctl00_p1_f1_r3_c2_ctrl::text').extract()
+        method = response.css('#mainModuleContainer_1855_1856_ctl00_ctl00_p1_f1_r3_c4_ctrl::text').extract()
+        util = response.css('#mainModuleContainer_1855_1856_ctl00_ctl00_p1_f1_r19_c2_ctrl::text').extract()
+        catalog = response.css('#mainModuleContainer_1855_1856_ctl00_ctl00_p1_f1_r19_c4_ctrl::text').extract()
+        lv = response.css('#mainModuleContainer_1855_1856_ctl00_ctl00_p1_f1_r20_c2_ctrl::text').extract()
+        price = response.css('#mainModuleContainer_1855_1856_ctl00_ctl00_p1_f1_r20_c4_ctrl::text').extract()
+        user = response.css('#mainModuleContainer_1855_1856_ctl00_ctl00_p1_f1_r9_c2_ctrl::text').extract()
+        cap_b = response.css('#mainModuleContainer_1855_1856_ctl00_ctl00_p1_f2_r1_c2_ctrl::text').extract()
+        cap_h = response.css('#mainModuleContainer_1855_1856_ctl00_ctl00_p1_f2_r1_c4_ctrl::text').extract()
+        jd_time = response.css('#mainModuleContainer_1855_1856_ctl00_ctl00_p1_f1_r21_c4_ctrl::text').extract()
+        kg_time = response.css('#mainModuleContainer_1855_1856_ctl00_ctl00_p1_f1_r22_c2_ctrl::text').extract()
+        jg_time = response.css('#mainModuleContainer_1855_1856_ctl00_ctl00_p1_f1_r22_c4_ctrl::text').extract()
+        qy_time = response.css('#mainModuleContainer_1855_1856_ctl00_ctl00_p1_f1_r14_c4_ctrl::text').extract()
 
-        while True:
-            try:
-                c = cells.next()
-                for k,v in RES_MAPPING.iteritems():
-                    if k in c.text:
-                        c = cells.next()
-                        item[v] = c.text
-                        continue
-            except StopIteration:
-                break
+        item['domain'] = domain[0] if domain else u''
+        item['name'] = name[0] if name else u''
+        item['addr'] = addr[0] if addr else u''
+        item['size'] = size[0] if size else u''
+        item['src'] = src[0] if src else u''
+        item['use'] = use[0] if use else u''
+        item['method'] = method[0] if method else u''
+        item['util'] = util[0] if util else u''
+        item['catalog'] = catalog[0] if catalog else u''
+        item['lv'] = lv[0] if lv else u''
+        item['price'] = price[0] if price else u''
+        item['user'] = user[0] if user else u''
+        item['cap_b'] = cap_b[0] if cap_b else u''
+        item['cap_h'] = cap_h[0] if cap_h else u''
+        item['jd_time'] = jd_time[0] if jd_time else u''
+        item['kg_time'] = kg_time[0] if kg_time else u''
+        item['jg_time'] = jg_time[0] if jg_time else u''
+        item['qy_time'] = qy_time[0] if qy_time else u''
 
         return [item]
