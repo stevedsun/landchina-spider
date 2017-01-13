@@ -66,7 +66,7 @@ class Mapper(object):
                 while page:
                     for cellurl in page.fetchall():
                         yield cellurl
-                    page.go_to_next()
+                    page = page.go_to_next()
 
     def iterreq(self):
         for cellurl in self.itercellurl():
