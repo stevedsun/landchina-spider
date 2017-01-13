@@ -11,6 +11,29 @@ ITEM_PIPELINES = {'landchina.pipelines.SaveExcelPipeline': 1}
 BASE_URL = u'http://www.landchina.com/default.aspx?tabid=263&wmguid=75c72564-ffd9-426a-954b-8ac2df0903b7&p=9f2c3acd-0256-4da2-a659-6949c4671a2a%3A{start}~{end}%7C42ad98ae-c46a-40aa-aacc-c0884036eeaf%{province}'
 
 PROVINCE_BASE = u'3A{value}%u2593%7E{key}'
+
+CELL_MAP = {
+    'domain': '#mainModuleContainer_1855_1856_ctl00_ctl00_p1_f1_r1_c2_ctrl',
+    'name': '#mainModuleContainer_1855_1856_ctl00_ctl00_p1_f1_r17_c2_ctrl',
+    'addr': '#mainModuleContainer_1855_1856_ctl00_ctl00_p1_f1_r16_c2_ctrl',
+    'size': '#mainModuleContainer_1855_1856_ctl00_ctl00_p1_f1_r2_c2_ctrl',
+    'src': '#mainModuleContainer_1855_1856_ctl00_ctl00_p1_f1_r2_c4_ctrl',
+    'use': '#mainModuleContainer_1855_1856_ctl00_ctl00_p1_f1_r3_c2_ctrl',
+    'method': '#mainModuleContainer_1855_1856_ctl00_ctl00_p1_f1_r3_c4_ctrl',
+    'util': '#mainModuleContainer_1855_1856_ctl00_ctl00_p1_f1_r19_c2_ctrl',
+    'catalog': '#mainModuleContainer_1855_1856_ctl00_ctl00_p1_f1_r19_c4_ctrl',
+    'lv': '#mainModuleContainer_1855_1856_ctl00_ctl00_p1_f1_r20_c2_ctrl',
+    'price': '#mainModuleContainer_1855_1856_ctl00_ctl00_p1_f1_r20_c4_ctrl',
+    'user': '#mainModuleContainer_1855_1856_ctl00_ctl00_p1_f1_r9_c2_ctrl',
+    'cap_b': '#mainModuleContainer_1855_1856_ctl00_ctl00_p1_f2_r1_c2_ctrl',
+    'cap_h': '#mainModuleContainer_1855_1856_ctl00_ctl00_p1_f2_r1_c4_ctrl',
+    'jd_time': '#mainModuleContainer_1855_1856_ctl00_ctl00_p1_f1_r21_c4_ctrl',
+    'kg_time': '#mainModuleContainer_1855_1856_ctl00_ctl00_p1_f1_r22_c2_ctrl',
+    'jg_time': '#mainModuleContainer_1855_1856_ctl00_ctl00_p1_f1_r22_c4_ctrl',
+    'qy_time': '#mainModuleContainer_1855_1856_ctl00_ctl00_p1_f1_r14_c4_ctrl'
+}
+
+
 PROVINCE_MAP = {
     u'北京市':   '11',
     u'天津市':   '12',
