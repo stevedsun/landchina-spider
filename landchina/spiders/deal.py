@@ -20,9 +20,9 @@ class BreakPointTrack(object):
 
     def save(self):
         track = "{time} - [url:{url}] - [page:{page}]\n".format(
-            datetime.datetime.now(),
-            self.url,
-            self.page_no,
+            time=datetime.datetime.now(),
+            url=self.url,
+            page=self.page_no,
         )
         with open("./break.point") as f:
             f.write(track)
