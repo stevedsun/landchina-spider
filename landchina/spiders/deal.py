@@ -11,6 +11,23 @@ from landchina.items import DealResult
 from landchina.settings import BASE_URL, PROVINCE_BASE, PROVINCE_MAP, CELL_MAP
 
 
+class BreakPointTrack(object):
+
+    def __init__(self, url, page_no):
+        self.url = url
+        self.page_no = page_no
+        self.save()
+
+    def save(self):
+        track = "{time} - [url:{url}] - [page:{page}]\n".format(
+            datetime.datetime.now(),
+            self.url,
+            self.page_no,
+        )
+        with open("./break.point") as f:
+            f.write(track)
+
+
 class Province(object):
 
     def __init__(self, name, code, urlcode):
@@ -64,6 +81,7 @@ class Mapper(object):
             for url in self.iterurl(prvn):
                 page = Page(url, self.driver)
                 while page:
+                    BreakPointTrack(url, page.page_no)
                     for cellurl in page.fetchall():
                         yield cellurl
                     page = page.go_to_next()
