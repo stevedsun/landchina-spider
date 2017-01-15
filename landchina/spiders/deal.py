@@ -24,7 +24,7 @@ class BreakPointTrack(object):
             url=self.url,
             page=self.page_no,
         )
-        with open("break.point", "wb+") as f:
+        with open("break.point", "a") as f:
             f.write(track)
 
 
