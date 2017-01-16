@@ -23,7 +23,7 @@ class BreakPointTrack(object):
             url=self.url,
             page=self.page_no,
         )
-        with open("break.point", "a") as f:
+        with open("breakpoint.log", "a") as f:
             f.write(track)
 
 
@@ -154,7 +154,7 @@ class LandDealSpider(Spider):
         item = DealResult()
 
         for k, v in CELL_MAP.iteritems():
-            value = response.css(v + "::text")
+            value = response.css(v + "::text").extract()
             if value:
                 item[k] = value[0]
             else:
