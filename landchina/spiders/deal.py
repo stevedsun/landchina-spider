@@ -1,6 +1,7 @@
 # coding: utf-8
 import datetime
 
+from selenium import webdriver
 from scrapy.spiders import Spider
 from scrapy.http import Request
 from selenium.common.exceptions import NoSuchElementException
@@ -138,7 +139,9 @@ class LandDealSpider(Spider):
     allowed_domains = ["landchina.com"]
 
     def start_requests(self):
-        mapper = Mapper(self.driver)
+        service_args = ['--load-images=false', '--disk-cache=true']
+        driver = webdriver.PhantomJS(service_args=service_args)
+        mapper = Mapper(driver)
         return mapper.iterreq()
 
     def parse(self, response):
