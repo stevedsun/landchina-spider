@@ -1,11 +1,9 @@
 # coding: utf-8
 import datetime
-from time import sleep
 
 from scrapy.spiders import Spider
 from scrapy.http import Request
 from selenium.common.exceptions import NoSuchElementException
-from selenium import webdriver
 
 from landchina.items import DealResult
 from landchina.settings import BASE_URL, PROVINCE_BASE, PROVINCE_MAP, CELL_MAP
@@ -88,7 +86,9 @@ class Mapper(object):
 
     def iterreq(self):
         for cellurl in self.itercellurl():
-            yield Request(cellurl)
+            request = Request(cellurl)
+            request.meta['PhantomJS'] = True
+            yield request
 
 
 class Page(object):
@@ -137,19 +137,12 @@ class LandDealSpider(Spider):
     name = "landdeal"
     allowed_domains = ["landchina.com"]
 
-    def __init__(self):
-        self.driver = webdriver.PhantomJS()
-        self.pagedriver = webdriver.PhantomJS()
-        super(LandDealSpider, self).__init__()
-
     def start_requests(self):
         mapper = Mapper(self.driver)
         return mapper.iterreq()
 
     def parse(self, response):
         item = DealResult()
-        self.pagedriver.get(response.url)
-        sleep(0.5)
 
         for k, v in CELL_MAP.iteritems():
             item[k] = self.pagedriver.find_element_by_css_selector(v).text

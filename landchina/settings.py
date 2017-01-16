@@ -4,7 +4,9 @@
 SPIDER_MODULES = ['landchina.spiders']
 NEWSPIDER_MODULE = 'landchina.spiders'
 DEFAULT_ITEM_CLASS = 'landchina.items.DealResult'
-
+DOWNLOADER_MIDDLEWARES = {
+    'landchina.middlewares.PhantomJSMiddleware': 1000,
+}
 ITEM_PIPELINES = {'landchina.pipelines.SaveExcelPipeline': 1}
 
 
