@@ -138,16 +138,26 @@ class LandDealSpider(Spider):
     name = "landdeal"
     allowed_domains = ["landchina.com"]
 
-    def start_requests(self):
+    def __init__(self, name=None, **kwargs):
         service_args = ['--load-images=false', '--disk-cache=true']
-        driver = webdriver.PhantomJS(service_args=service_args)
-        mapper = Mapper(driver)
+        self.driver = webdriver.PhantomJS(service_args=service_args)
+        super(LandDealSpider, self).__init__(name, **kwargs)
+
+    def close(self, reason):
+        self.driver.quit()
+
+    def start_requests(self):
+        mapper = Mapper(self.driver)
         return mapper.iterreq()
 
     def parse(self, response):
         item = DealResult()
 
         for k, v in CELL_MAP.iteritems():
-            item[k] = self.pagedriver.find_element_by_css_selector(v).text
+            value = response.css(v + "::text")
+            if value:
+                item[k] = value[0]
+            else:
+                item[k] = ''
 
         return [item]
