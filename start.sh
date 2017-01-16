@@ -1,1 +1,1 @@
-scrapy crawl landdeal -s JOBDIR=crawls/landchina-1
+scrapy crawl landdeal

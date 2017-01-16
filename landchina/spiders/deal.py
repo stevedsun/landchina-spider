@@ -155,9 +155,6 @@ class LandDealSpider(Spider):
 
         for k, v in CELL_MAP.iteritems():
             value = response.css(v + "::text").extract()
-            if value:
-                item[k] = value[0]
-            else:
-                item[k] = ''
+            item[k] = value[0] if value else ''
 
         return [item]
