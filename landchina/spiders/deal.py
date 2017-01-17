@@ -157,8 +157,21 @@ class LandDealSpider(Spider):
     def parse(self, response):
         item = DealResult()
 
+        value = response.css("#mainModuleContainer_1855_1856_ctl00_ctl00_p1_f1_r2_c2_ctrl::text").extract()
+        item['size'] = value[0] if value else u''
         for k, v in CELL_MAP.iteritems():
             value = response.css(v + "::text").extract()
-            item[k] = value[0] if value else ''
+            if k == 'src' and item.get('size', None):
+                item[k] = value[0] if value else u''
+                if item[k] == item['size']:
+                    item[k] = u"现有建设用地"
+                elif float(item[k]) == 0:
+                    item[k] = u"新增建设用地"
+                else:
+                    item[k] = u"新增建设用地(来自存量库)"
+            else:
+                item[k] = value[0] if value else u''
+                if item[k] == u'1900-01-01':
+                    item[k] = u' '
 
         return [item]

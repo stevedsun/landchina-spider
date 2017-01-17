@@ -4,10 +4,10 @@
 SPIDER_MODULES = ['landchina.spiders']
 NEWSPIDER_MODULE = 'landchina.spiders'
 DEFAULT_ITEM_CLASS = 'landchina.items.DealResult'
-DOWNLOADER_MIDDLEWARES = {
-    'scrapy.contrib.downloadermiddleware.useragent.UserAgentMiddleware' : None,
-    'landchina.middlewares.PhantomJSMiddleware': 1000,
-}
+# DOWNLOADER_MIDDLEWARES = {
+    # 'scrapy.contrib.downloadermiddleware.useragent.UserAgentMiddleware' : None,
+    # 'landchina.middlewares.PhantomJSMiddleware': 1000,
+# }
 ITEM_PIPELINES = {'landchina.pipelines.SaveExcelPipeline': 1}
 
 
@@ -19,7 +19,7 @@ CELL_MAP = {
     'domain': '#mainModuleContainer_1855_1856_ctl00_ctl00_p1_f1_r1_c2_ctrl',
     'name': '#mainModuleContainer_1855_1856_ctl00_ctl00_p1_f1_r17_c2_ctrl',
     'addr': '#mainModuleContainer_1855_1856_ctl00_ctl00_p1_f1_r16_c2_ctrl',
-    'size': '#mainModuleContainer_1855_1856_ctl00_ctl00_p1_f1_r2_c2_ctrl',
+    # 'size': '#mainModuleContainer_1855_1856_ctl00_ctl00_p1_f1_r2_c2_ctrl',
     'src': '#mainModuleContainer_1855_1856_ctl00_ctl00_p1_f1_r2_c4_ctrl',
     'use': '#mainModuleContainer_1855_1856_ctl00_ctl00_p1_f1_r3_c2_ctrl',
     'method': '#mainModuleContainer_1855_1856_ctl00_ctl00_p1_f1_r3_c4_ctrl',
