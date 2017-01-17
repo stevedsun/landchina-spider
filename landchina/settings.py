@@ -5,6 +5,7 @@ SPIDER_MODULES = ['landchina.spiders']
 NEWSPIDER_MODULE = 'landchina.spiders'
 DEFAULT_ITEM_CLASS = 'landchina.items.DealResult'
 DOWNLOADER_MIDDLEWARES = {
+    'scrapy.contrib.downloadermiddleware.useragent.UserAgentMiddleware' : None,
     'landchina.middlewares.PhantomJSMiddleware': 1000,
 }
 ITEM_PIPELINES = {'landchina.pipelines.SaveExcelPipeline': 1}
