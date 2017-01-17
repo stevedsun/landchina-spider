@@ -22,7 +22,7 @@ class PhantomJSMiddleware(object):
             except:
                 ua = 'Mozilla/5.0 (X11; CrOS i686 2268.111.0) AppleWebKit/536.11 (KHTML, like Gecko) Chrome/20.0.1132.57 Safari/536.11'
 
-            request.headers.setdefault('User-Agent', ua)
+            webdriver.DesiredCapabilities.PHANTOMJS['phantomjs.page.settings.userAgent'] = ua
 
             try:
                 self.driver.get(request.url)

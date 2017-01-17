@@ -79,9 +79,13 @@ class Mapper(object):
         for prvn in self.iterprvn():
             for url in self.iterurl(prvn):
                 page = Page(url, self.driver)
-                while page:
+                page_ok = True
+                while page and page_ok:
                     BreakPointTrack(url, page.page_no)
                     for cellurl in page.fetchall():
+                        if not cellurl:
+                            page_ok = False
+                            break
                         yield cellurl
                     page = page.go_to_next()
 
