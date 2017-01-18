@@ -108,12 +108,17 @@ class Mapper(object):
 
 class Page(object):
 
-    def __init__(self, url, driver, page_no=1):
+    def __init__(self, url, driver, page_no=1, page_max=0):
         self.url = url
+        self.page_max = page_max
         self.page_no = page_no
         self.driver = driver
         if self.page_no == 1:
             self.driver.get(self.url)
+        if self.page_max == 0:
+            self.get_max_page()
+
+    def get_max_page(self):
         paper = self.driver.find_element_by_class_name('pager')
         self.page_max = int(re.search(r'[0-9]\d*', paper.text).group(0))
 
@@ -122,7 +127,7 @@ class Page(object):
             return None
         self.driver.execute_script("document.getElementById('TAB_QuerySubmitPagerData').setAttribute('value', %s)" % (self.page_no+1))
         self.driver.execute_script("document.getElementById('mainForm').submit()")
-        return Page(self.url, self.driver, self.page_no+1)
+        return Page(self.url, self.driver, self.page_no+1, self.page_max)
 
     def fetchall(self):
         try:
@@ -144,7 +149,8 @@ class LandDealSpider(Spider):
 
     def __init__(self, name=None, **kwargs):
         service_args = ['--load-images=false', '--disk-cache=true']
-        self.driver = webdriver.PhantomJS(service_args=service_args)
+        # self.driver = webdriver.PhantomJS(service_args=service_args)
+        self.driver = webdriver.Chrome(service_args=service_args)
         self.driver.implicitly_wait(10)
         super(LandDealSpider, self).__init__(name, **kwargs)
 

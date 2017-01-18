@@ -1,8 +1,8 @@
 # coding: utf-8
 # Scrapy settings for landchina project
-AUTOTHROTTLE_ENABLED = True
-AUTOTHROTTLE_START_DELAY = 0.5
-AUTOTHROTTLE_MAX_DELAY = 10
+# AUTOTHROTTLE_ENABLED = True
+# AUTOTHROTTLE_START_DELAY = 0.5
+# AUTOTHROTTLE_MAX_DELAY = 10
 SPIDER_MODULES = ['landchina.spiders']
 NEWSPIDER_MODULE = 'landchina.spiders'
 DEFAULT_ITEM_CLASS = 'landchina.items.DealResult'
