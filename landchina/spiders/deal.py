@@ -59,6 +59,7 @@ class Mapper(object):
         self.where = where
         self.begin = begin
         self.end = end
+        self.curr = None
 
     def get_province(self):
         pname, pcode = self.where, PROVINCE_MAP.get(self.where, None)
@@ -77,8 +78,9 @@ class Mapper(object):
         start = datetime.datetime.strptime(self.begin, "%Y-%m").date()
         stop = datetime.datetime.strptime(self.end, "%Y-%m").date()
         curr = start
-        month_last = calendar.monthrange(curr.year, curr.month)[1]
         while curr <= stop:
+            month_last = calendar.monthrange(curr.year, curr.month)[1]
+            self.curr = '{year}-{month}'.format(year=curr.year, month=curr.month)
             from_date = '{year}-{month}-{day}'.format(year=curr.year,
                                                       month=curr.month,
                                                       day=1)
