@@ -1,6 +1,7 @@
 # coding: utf-8
 
 from scrapy.http import HtmlResponse
+from scrapy import log
 from selenium import webdriver
 from fake_useragent import UserAgent
 
@@ -15,7 +16,7 @@ class PhantomJSMiddleware(object):
 
     def process_request(self, request, spider):
         if request.meta.has_key('PhantomJS'):
-            print 'PhantomJS Requesting: ', request.url
+            log.msg('PhantomJS Requesting: %s' % request.url, level=log.DEBUG)
             ua = None
             try:
                 ua = UserAgent().random
@@ -37,4 +38,4 @@ class PhantomJSMiddleware(object):
                 return HtmlResponse(url, encoding='utf-8', status=200, body=content)
 
         else:
-            print 'Common Requesting: ', request.url
+            log.msg('Common Requesting: %s' % request.url, level=log.DEBUG)

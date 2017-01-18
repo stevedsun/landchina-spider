@@ -6,6 +6,7 @@ import re
 from selenium import webdriver
 from scrapy.spiders import Spider
 from scrapy.http import Request
+from scrapy import log
 from selenium.common.exceptions import NoSuchElementException
 
 from landchina.items import DealResult
@@ -64,6 +65,7 @@ class Mapper(object):
     def get_province(self):
         pname, pcode = self.where, PROVINCE_MAP.get(self.where, None)
         if not pcode:
+            log.msg("** Province (%s) NOT FOUND !! **" % self.where, level=log.ERROR)
             raise ValueError
 
         urlcode = u''
@@ -118,9 +120,11 @@ class Page(object):
         self.page_no = page_no
         self.driver = driver
         if self.page_no == 1:
+            log.msg("Crawling url: %s ... " % self.url, level=log.INFO)
             self.driver.get(self.url)
         if self.page_max == 0:
             self.get_max_page()
+        log.msg("--> page %s ... " % page_no, level=log.INFO)
 
     def get_max_page(self):
         paper = self.driver.find_element_by_class_name('pager')
@@ -128,6 +132,7 @@ class Page(object):
 
     def go_to_next(self):
         if self.page_no >= self.page_max:
+            log.msg("Crawling url: %s ... done" % self.url, level=log.INFO)
             return None
         self.driver.execute_script("document.getElementById('TAB_QuerySubmitPagerData').setAttribute('value', %s)" % (self.page_no+1))
         self.driver.execute_script("document.getElementById('mainForm').submit()")
@@ -137,6 +142,7 @@ class Page(object):
         try:
             items = self.driver.find_elements_by_css_selector('.queryCellBordy a')
         except NoSuchElementException:
+            log.msg("** TABLE NOT FOUND in url: %s **" % self.url, level=log.ERROR)
             yield None
 
         for item in items:
@@ -152,6 +158,7 @@ class LandDealSpider(Spider):
     allowed_domains = ["landchina.com"]
 
     def __init__(self, name=None, **kwargs):
+        log.msg("Starting ...", level=log.INFO)
         where = kwargs.pop('where', None)
         begin = kwargs.pop('begin', None)
         end = kwargs.pop('end', None)
@@ -162,6 +169,7 @@ class LandDealSpider(Spider):
         # self.driver = webdriver.PhantomJS(service_args=service_args)
         self.driver = webdriver.Chrome(service_args=service_args)
         self.driver.implicitly_wait(10)
+        log.msg("Starting ... OK", level=log.INFO)
 
         self.where = where
         self.mapper = Mapper(self.driver, where, begin, end)
