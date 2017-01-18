@@ -1,7 +1,7 @@
 # coding: utf-8
 import xlwt
 
-XLSNAME = 'result'
+XLSNAME = 'results/result'
 
 
 class SaveExcelPipeline(object):
