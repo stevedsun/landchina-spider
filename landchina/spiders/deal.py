@@ -33,7 +33,7 @@ class BreakPointTrack(object):
 
     def save(self):
         now = time.time()
-        log.info("==> Got page: {page}, cost: {cost} seconds".format(
+        log.info("** Finshed page: {page}, cost: {cost} seconds **".format(
             time=datetime.datetime.now(),
             url=self.url,
             page=self.page_no,
@@ -134,7 +134,7 @@ class Page(object):
     def go_to_next(self):
         if self.page_no >= self.page_max:
             return None
-        log.info("Skipping to Page: %s ... " % (self.page_no+1))
+        log.info("==> Skipping to Page: %s ... " % (self.page_no+1))
         self.driver.execute_script("document.getElementById('TAB_QuerySubmitPagerData').setAttribute('value', %s)" % (self.page_no+1))
         self.driver.execute_script("document.getElementById('mainForm').submit()")
         return Page(self.url, self.driver, self.page_no+1, self.page_max)

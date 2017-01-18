@@ -43,7 +43,7 @@ class SaveExcelPipeline(object):
         self.xls.save(os.path.join(XLSDIR, self.filename + '.xls'))
 
     def process_item(self, item, spider):
-        filename = '-'.join([spider.where, spider.mapper.curr, spider.mapper.nxt])
+        filename = '-'.join([spider.where, spider.mapper.curr])
         self.save_to_file(filename, item)
         return item
 
