@@ -31,14 +31,12 @@ class BreakPointTrack(object):
 
     def save(self):
         now = time.time()
-        track = "{time} - [url:{url}] - [page:{page}] - [cost:{cost}]\n".format(
+        log.msg("[url:{url}] - [page:{page}] - [cost:{cost}]\n".format(
             time=datetime.datetime.now(),
             url=self.url,
             page=self.page_no,
             cost= now - self.get_last()
-        )
-        with open("breakpoint.log", "a") as f:
-            f.write(track)
+        ), level=log.INFO)
 
         self.set_last(now)
 
@@ -120,7 +118,7 @@ class Page(object):
         self.page_no = page_no
         self.driver = driver
         if self.page_no == 1:
-            log.msg("Crawling url: %s ... " % self.url, level=log.INFO)
+            log.msg("-> url: %s ... " % self.url, level=log.INFO)
             self.driver.get(self.url)
         if self.page_max == 0:
             self.get_max_page()
@@ -132,7 +130,6 @@ class Page(object):
 
     def go_to_next(self):
         if self.page_no >= self.page_max:
-            log.msg("Crawling url: %s ... done" % self.url, level=log.INFO)
             return None
         self.driver.execute_script("document.getElementById('TAB_QuerySubmitPagerData').setAttribute('value', %s)" % (self.page_no+1))
         self.driver.execute_script("document.getElementById('mainForm').submit()")
