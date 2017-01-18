@@ -53,26 +53,29 @@ class Province(object):
 
 class Mapper(object):
 
-    def __init__(self, driver):
+    def __init__(self, driver, where, begin, end):
         self.driver = driver
+        self.where = where
+        self.begin = begin
+        self.end = end
+        self.curr = None
+        self.nxt = None
 
-    def iterprvn(self, prvns=None):
-        if not prvns:
-            pmap = PROVINCE_MAP
-        else:
-            pmap = prvns
+    def get_province(self):
+        pname, pcode = self.where, PROVINCE_MAP.get(self.where, None)
+        if not pcode:
+            raise ValueError
 
-        for pname, pcode in pmap.iteritems():
-            urlcode = u''
-            for letter in pname:
-                urlcode += '%%u%x' % ord(letter)
+        urlcode = u''
+        for letter in pname:
+            urlcode += '%%u%x' % ord(letter)
 
-            yield Province(pname, pcode, urlcode)
+        return Province(pname, pcode, urlcode)
 
 
-    def iterurl(self, prvn, begin='2009-1-1', end='2017-1-1'):
-        start = datetime.datetime.strptime(begin, "%Y-%m-%d").date()
-        stop = datetime.datetime.strptime(end, "%Y-%m-%d").date()
+    def iterurl(self, prvn):
+        start = datetime.datetime.strptime(self.begin, "%Y-%m-%d").date()
+        stop = datetime.datetime.strptime(self.end, "%Y-%m-%d").date()
         curr = start
         try:
             nxt = curr.replace(month=curr.month+1)
@@ -80,9 +83,10 @@ class Mapper(object):
             nxt = curr.replace(year=curr.year+1, month=1)
 
         while nxt <= stop:
+            self.curr, self.nxt = curr.isoformat(), nxt.isoformat()
             yield BASE_URL.format(province=prvn.pcode,
-                                  start=curr.isoformat(),
-                                  end=nxt.isoformat())
+                                  start=self.curr,
+                                  end=self.nxt)
 
             try:
                 curr, nxt = nxt, nxt.replace(month=nxt.month+1)
@@ -90,14 +94,14 @@ class Mapper(object):
                 curr, nxt = nxt, nxt.replace(year=nxt.year+1, month=1)
 
     def itercellurl(self):
-        for prvn in self.iterprvn():
-            for url in self.iterurl(prvn):
-                page = Page(url, self.driver)
-                while page:
-                    for cellurl in page.fetchall():
-                        yield cellurl
-                    BreakPointTrack(url, page.page_no)
-                    page = page.go_to_next()
+        prvn = self.get_province()
+        for url in self.iterurl(prvn):
+            page = Page(url, self.driver)
+            while page:
+                for cellurl in page.fetchall():
+                    yield cellurl
+                BreakPointTrack(url, page.page_no)
+                page = page.go_to_next()
 
     def iterreq(self):
         for cellurl in self.itercellurl():
@@ -148,18 +152,26 @@ class LandDealSpider(Spider):
     allowed_domains = ["landchina.com"]
 
     def __init__(self, name=None, **kwargs):
+        where = kwargs.pop('where', None)
+        begin = kwargs.pop('begin', None)
+        end = kwargs.pop('end', None)
+        if isinstance(where, str):
+            where = where.decode('utf-8')
+
         service_args = ['--load-images=false', '--disk-cache=true']
         # self.driver = webdriver.PhantomJS(service_args=service_args)
         self.driver = webdriver.Chrome(service_args=service_args)
         self.driver.implicitly_wait(10)
+
+        self.where = where
+        self.mapper = Mapper(self.driver, where, begin, end)
         super(LandDealSpider, self).__init__(name, **kwargs)
 
     def close(self, reason):
         self.driver.quit()
 
     def start_requests(self):
-        mapper = Mapper(self.driver)
-        return mapper.iterreq()
+        return self.mapper.iterreq()
 
     def parse(self, response):
         item = DealResult()

@@ -1,15 +1,27 @@
 # coding: utf-8
+
+import os
 import xlwt
 
-XLSNAME = 'results/result'
+XLSDIR = 'results'
 
 
 class SaveExcelPipeline(object):
 
-    def open_spider(self, spider):
+    def __init__(self):
+        self.xls, self.sheet, self.filename, self.row = None, None, None, None
+
+    def save_to_file(self, filename, item):
+        if filename != self.filename:
+            self.filename = filename
+            self.row = 0
+            self.init_new_excel()
+
+        self.text_to_excel(item)
+
+    def init_new_excel(self):
         self.xls = xlwt.Workbook()
         self.sheet = self.xls.add_sheet('sheet1', cell_overwrite_ok=True)
-        self.row = 0
         self.sheet.write(self.row, 0, u'行政区')
         self.sheet.write(self.row, 1, u'项目名称')
         self.sheet.write(self.row, 2, u'项目位置')
@@ -28,10 +40,11 @@ class SaveExcelPipeline(object):
         self.sheet.write(self.row, 15,u'约定开工时间')
         self.sheet.write(self.row, 16,u'约定竣工时间')
         self.sheet.write(self.row, 17,u'合同签订日期')
-        self.xls.save(XLSNAME + '.xls')
+        self.xls.save(os.path.join(XLSDIR, self.filename + '.xls'))
 
     def process_item(self, item, spider):
-        self.text_to_excel(item)
+        filename = '-'.join([spider.where, spider.mapper.curr, spider.mapper.nxt])
+        self.save_to_file(filename, item)
         return item
 
     def text_to_excel(self, item):
@@ -54,4 +67,4 @@ class SaveExcelPipeline(object):
         self.sheet.write(self.row, 15, item['kg_time'])
         self.sheet.write(self.row, 16, item['jg_time'])
         self.sheet.write(self.row, 17, item['qy_time'])
-        self.xls.save(XLSNAME + '.xls')
+        self.xls.save(os.path.join(XLSDIR, self.filename + '.xls'))
