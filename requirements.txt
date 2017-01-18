@@ -4,6 +4,7 @@ constantly==15.1.0
 cryptography==1.7.1
 cssselect==1.0.1
 enum34==1.1.6
+fake-useragent==0.1.4
 idna==2.2
 incremental==16.10.1
 ipaddress==1.0.18
