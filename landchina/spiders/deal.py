@@ -2,16 +2,18 @@
 import datetime
 import time
 import re
+import logging
+import calendar
 
 from selenium import webdriver
 from scrapy.spiders import Spider
 from scrapy.http import Request
-from scrapy import log
 from selenium.common.exceptions import NoSuchElementException
 
 from landchina.items import DealResult
 from landchina.settings import BASE_URL, PROVINCE_BASE, PROVINCE_MAP, CELL_MAP
 
+log = logging.getLogger(__name__)
 
 class BreakPointTrack(object):
     last_time = time.time()
@@ -31,12 +33,12 @@ class BreakPointTrack(object):
 
     def save(self):
         now = time.time()
-        log.msg("[url:{url}] - [page:{page}] - [cost:{cost}]\n".format(
+        log.info("==> Got page: {page}, cost: {cost} seconds".format(
             time=datetime.datetime.now(),
             url=self.url,
             page=self.page_no,
             cost= now - self.get_last()
-        ), level=log.INFO)
+        ))
 
         self.set_last(now)
 
@@ -57,13 +59,11 @@ class Mapper(object):
         self.where = where
         self.begin = begin
         self.end = end
-        self.curr = None
-        self.nxt = None
 
     def get_province(self):
         pname, pcode = self.where, PROVINCE_MAP.get(self.where, None)
         if not pcode:
-            log.msg("** Province (%s) NOT FOUND !! **" % self.where, level=log.ERROR)
+            log.info("** Province (%s) NOT FOUND !! **" % self.where)
             raise ValueError
 
         urlcode = u''
@@ -74,24 +74,25 @@ class Mapper(object):
 
 
     def iterurl(self, prvn):
-        start = datetime.datetime.strptime(self.begin, "%Y-%m-%d").date()
-        stop = datetime.datetime.strptime(self.end, "%Y-%m-%d").date()
+        start = datetime.datetime.strptime(self.begin, "%Y-%m").date()
+        stop = datetime.datetime.strptime(self.end, "%Y-%m").date()
         curr = start
-        try:
-            nxt = curr.replace(month=curr.month+1)
-        except ValueError:
-            nxt = curr.replace(year=curr.year+1, month=1)
-
-        while nxt <= stop:
-            self.curr, self.nxt = curr.isoformat(), nxt.isoformat()
+        month_last = calendar.monthrange(curr.year, curr.month)[1]
+        while curr <= stop:
+            from_date = '{year}-{month}-{day}'.format(year=curr.year,
+                                                      month=curr.month,
+                                                      day=1)
+            to_date = '{year}-{month}-{day}'.format(year=curr.year,
+                                                    month=curr.month,
+                                                    day=month_last)
             yield BASE_URL.format(province=prvn.pcode,
-                                  start=self.curr,
-                                  end=self.nxt)
+                                  start=from_date,
+                                  end=to_date)
 
             try:
-                curr, nxt = nxt, nxt.replace(month=nxt.month+1)
+                curr = curr.replace(month=curr.month+1)
             except ValueError:
-                curr, nxt = nxt, nxt.replace(year=nxt.year+1, month=1)
+                curr = curr.replace(year=curr.year+1, month=1)
 
     def itercellurl(self):
         prvn = self.get_province()
@@ -118,11 +119,11 @@ class Page(object):
         self.page_no = page_no
         self.driver = driver
         if self.page_no == 1:
-            log.msg("-> url: %s ... " % self.url, level=log.INFO)
+            log.info("Downloading URL: %s ... " % self.url)
             self.driver.get(self.url)
         if self.page_max == 0:
             self.get_max_page()
-        log.msg("--> page %s ... " % page_no, level=log.INFO)
+        log.info("Fetching Page: %s ... " % page_no)
 
     def get_max_page(self):
         paper = self.driver.find_element_by_class_name('pager')
@@ -131,6 +132,7 @@ class Page(object):
     def go_to_next(self):
         if self.page_no >= self.page_max:
             return None
+        log.info("Skipping to Page: %s ... " % (self.page_no+1))
         self.driver.execute_script("document.getElementById('TAB_QuerySubmitPagerData').setAttribute('value', %s)" % (self.page_no+1))
         self.driver.execute_script("document.getElementById('mainForm').submit()")
         return Page(self.url, self.driver, self.page_no+1, self.page_max)
@@ -139,7 +141,7 @@ class Page(object):
         try:
             items = self.driver.find_elements_by_css_selector('.queryCellBordy a')
         except NoSuchElementException:
-            log.msg("** TABLE NOT FOUND in url: %s **" % self.url, level=log.ERROR)
+            log.error("** TABLE NOT FOUND in url: %s **" % self.url)
             yield None
 
         for item in items:
@@ -155,7 +157,6 @@ class LandDealSpider(Spider):
     allowed_domains = ["landchina.com"]
 
     def __init__(self, name=None, **kwargs):
-        log.msg("Starting ...", level=log.INFO)
         where = kwargs.pop('where', None)
         begin = kwargs.pop('begin', None)
         end = kwargs.pop('end', None)
@@ -166,7 +167,6 @@ class LandDealSpider(Spider):
         # self.driver = webdriver.PhantomJS(service_args=service_args)
         self.driver = webdriver.Chrome(service_args=service_args)
         self.driver.implicitly_wait(10)
-        log.msg("Starting ... OK", level=log.INFO)
 
         self.where = where
         self.mapper = Mapper(self.driver, where, begin, end)
