@@ -10,12 +10,19 @@ XLSDIR = 'results'
 class SaveExcelPipeline(object):
 
     def __init__(self):
+        # {filename: index in handlers}
         self.filenames = {}
+        self.handlers = []
+
+    def gc_old_xls(self):
+        if len(self.filenames) > 3:
+            del self.handler[0]
+            self.handler = self.handler[1:]
 
     def save_to_file(self, filename, item):
         if filename not in self.filenames:
-            self.filenames[filename] = 0
             self.init_new_excel(filename)
+            self.gc_old_xls()
 
         self.text_to_excel(filename, item)
 
@@ -41,6 +48,8 @@ class SaveExcelPipeline(object):
         sheet.write(0, 16,u'约定竣工时间')
         sheet.write(0, 17,u'合同签订日期')
         xls.save(os.path.join(XLSDIR, filename + '.xls'))
+        self.handlers.append(xls)
+        self.filenames[filename] = len(self.handlers) - 1
 
 
     def process_item(self, item, spider):
@@ -52,23 +61,26 @@ class SaveExcelPipeline(object):
         return item
 
     def text_to_excel(self, filename, item):
-        self.filenames[filename] += 1
-        self.sheet.write(self.filenames[filename], 0, item['domain'] )
-        self.sheet.write(self.filenames[filename], 1, item['name']   )
-        self.sheet.write(self.filenames[filename], 2, item['addr']   )
-        self.sheet.write(self.filenames[filename], 3, item['size']   )
-        self.sheet.write(self.filenames[filename], 4, item['src']    )
-        self.sheet.write(self.filenames[filename], 5, item['use']    )
-        self.sheet.write(self.filenames[filename], 6, item['method'] )
-        self.sheet.write(self.filenames[filename], 7, item['util']   )
-        self.sheet.write(self.filenames[filename], 8, item['catalog'])
-        self.sheet.write(self.filenames[filename], 9, item['lv']     )
-        self.sheet.write(self.filenames[filename], 10, item['price']  )
-        self.sheet.write(self.filenames[filename], 11, item['user']   )
-        self.sheet.write(self.filenames[filename], 12, item['cap_b']  )
-        self.sheet.write(self.filenames[filename], 13, item['cap_h']  )
-        self.sheet.write(self.filenames[filename], 14, item['jd_time'])
-        self.sheet.write(self.filenames[filename], 15, item['kg_time'])
-        self.sheet.write(self.filenames[filename], 16, item['jg_time'])
-        self.sheet.write(self.filenames[filename], 17, item['qy_time'])
-        self.xls.save(os.path.join(XLSDIR, filename + '.xls'))
+        index = self.filenames[filename]
+        xls = self.handlers[index]
+        sheet = xls.get_sheet('sheet1')
+        row = sheet.last_used_row + 1
+        sheet.write(row, 0, item['domain'] )
+        sheet.write(row, 1, item['name']   )
+        sheet.write(row, 2, item['addr']   )
+        sheet.write(row, 3, item['size']   )
+        sheet.write(row, 4, item['src']    )
+        sheet.write(row, 5, item['use']    )
+        sheet.write(row, 6, item['method'] )
+        sheet.write(row, 7, item['util']   )
+        sheet.write(row, 8, item['catalog'])
+        sheet.write(row, 9, item['lv']     )
+        sheet.write(row, 10, item['price']  )
+        sheet.write(row, 11, item['user']   )
+        sheet.write(row, 12, item['cap_b']  )
+        sheet.write(row, 13, item['cap_h']  )
+        sheet.write(row, 14, item['jd_time'])
+        sheet.write(row, 15, item['kg_time'])
+        sheet.write(row, 16, item['jg_time'])
+        sheet.write(row, 17, item['qy_time'])
+        xls.save(os.path.join(XLSDIR, filename + '.xls'))
