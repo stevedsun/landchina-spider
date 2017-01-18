@@ -3,9 +3,14 @@
 # AUTOTHROTTLE_ENABLED = True
 # AUTOTHROTTLE_START_DELAY = 0.5
 # AUTOTHROTTLE_MAX_DELAY = 10
+COOKIES_ENABLES = False
 SPIDER_MODULES = ['landchina.spiders']
 NEWSPIDER_MODULE = 'landchina.spiders'
 DEFAULT_ITEM_CLASS = 'landchina.items.DealResult'
+DOWNLOADER_MIDDLEWARES = {
+    'scrapy.contrib.downloadermiddleware.useragent.UserAgentMiddleware': None,
+    'landchina.middlewares.randomua.RandomUserAgentMiddleware': 400
+}
 
 ITEM_PIPELINES = {'landchina.pipelines.SaveExcelPipeline': 1}
 
