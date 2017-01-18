@@ -13,7 +13,7 @@ class SaveExcelPipeline(object):
         self.filenames = {}
 
     def save_to_file(self, filename, item):
-        if filename not in self.filename:
+        if filename not in self.filenames:
             self.filenames[filename] = 0
             self.init_new_excel(filename)
 
