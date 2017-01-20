@@ -199,13 +199,16 @@ class LandDealSpider(Spider):
         for k, v in CELL_MAP.iteritems():
             value = response.css(v + "::text").extract()
             if k == 'src' and item.get('size', None):
-                item[k] = value[0] if value else u''
-                if item[k] == item['size']:
-                    item[k] = u"现有建设用地"
-                elif float(item[k]) == 0:
-                    item[k] = u"新增建设用地"
-                else:
-                    item[k] = u"新增建设用地(来自存量库)"
+                try:
+                    item[k] = value[0] if value else u''
+                    if item[k] == item['size']:
+                        item[k] = u"现有建设用地"
+                    elif float(item[k]) == 0:
+                        item[k] = u"新增建设用地"
+                    else:
+                        item[k] = u"新增建设用地(来自存量库)"
+                except:
+                    item[k] = value[0] if value else u''
             else:
                 item[k] = value[0] if value else u''
                 if item[k] == u'1900-01-01':
