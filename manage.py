@@ -4,11 +4,14 @@ import ConfigParser
 import os
 
 def main():
-    config = ConfigParser.RawConfigParser()
-    config.read('info.ini')
-    code = config.get('code')
-    begin = config.get('begin')
-    end = config.get('end')
+    try:
+        config = ConfigParser.RawConfigParser(allow_no_value=True)
+        config.read('info.ini')
+        code = config['code']
+        begin = config['begin']
+        end = config['end']
+    except:
+        print 'Error parameter in info.ini'
 
     if code and begin and end:
         os.system('scrapy crawl -a where={code} -a begin={begin} -a end={end} -L INFO landdeal'.format(
@@ -16,8 +19,6 @@ def main():
             begin=begin,
             end=end
         ))
-    else:
-        print 'Error parameter in info.ini'
 
 
 if __name__ == "__main__":
