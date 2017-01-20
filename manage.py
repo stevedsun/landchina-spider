@@ -1,25 +1,24 @@
 # coding: utf-8
 
-import argparse
+import ConfigParser
 import os
 
 def main():
-    parser = argparse.ArgumentParser()
-    parser.add_argument('code', nargs='?', default='320100', help='Province code')
-    parser.add_argument('begin', nargs='?', default='2009-1', help='When to begin')
-    parser.add_argument('end', nargs='?', default='2016-12', help='When to end')
-    args = parser.parse_args()
+    config = ConfigParser.RawConfigParser()
+    config.read('info.ini')
+    code = config.get('code')
+    begin = config.get('begin')
+    end = config.get('end')
 
-    if args.code and args.begin and args.end:
+    if code and begin and end:
         os.system('scrapy crawl -a where={code} -a begin={begin} -a end={end} -L INFO landdeal'.format(
-            code=args.code,
-            begin=args.begin,
-            end=args.end
+            code=code,
+            begin=begin,
+            end=end
         ))
     else:
-        parser.print_help()
+        print 'Error parameter in info.ini'
 
 
 if __name__ == "__main__":
     main()
-
