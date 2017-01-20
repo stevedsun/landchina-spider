@@ -2,7 +2,7 @@
 import json
 # Scrapy settings for landchina project
 AUTOTHROTTLE_ENABLED = True
-AUTOTHROTTLE_START_DELAY = 0.5
+AUTOTHROTTLE_START_DELAY = 0.1
 AUTOTHROTTLE_MAX_DELAY = 600
 COOKIES_ENABLES = False
 SPIDER_MODULES = ['landchina.spiders']

@@ -69,7 +69,7 @@ class Mapper(object):
             raise ValueError
 
         pcode = pcode.rstrip('0')
-        log.info("Start crawling %s" % pname)
+        log.info("::::::::::::::::::::::::: %s :::::::::::::::::::::::::" % pname)
         urlcode = u''
         for letter in pname:
             urlcode += '%%u%x' % ord(letter)
@@ -155,7 +155,7 @@ class Page(object):
             items = self.driver.find_elements_by_css_selector('.queryCellBordy a')
         except NoSuchElementException:
             log.error("** TABLE NOT FOUND in url: %s **" % self.url)
-            yield None
+            raise StopIteration
 
         for item in items:
             url = item.get_attribute('href')
