@@ -68,7 +68,7 @@ class Mapper(object):
             log.info("** Province (%s) NOT FOUND !! **" % self.where)
             raise ValueError
 
-        pcode = pcode.rstrip('0')
+        pcode = pcode.strip().rstrip('0')
         log.info("::::::::::::::::::::::::: %s :::::::::::::::::::::::::" % pname)
         urlcode = u''
         for letter in pname:
