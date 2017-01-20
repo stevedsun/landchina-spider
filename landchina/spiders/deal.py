@@ -11,7 +11,7 @@ from scrapy.http import Request
 from selenium.common.exceptions import NoSuchElementException
 
 from landchina.items import DealResult
-from landchina.settings import BASE_URL, PROVINCE_BASE, PROVINCE_MAP, CELL_MAP
+from landchina.settings import BASE_URL, PROVINCE_MAP, PROVINCE_BASE, CELL_MAP
 
 log = logging.getLogger(__name__)
 
@@ -62,11 +62,13 @@ class Mapper(object):
         self.curr = None
 
     def get_province(self):
-        pname, pcode = self.where, PROVINCE_MAP.get(self.where, None)
+        pcode, pname = self.where, PROVINCE_MAP.get(self.where, None)
         if not pcode:
             log.info("** Province (%s) NOT FOUND !! **" % self.where)
             raise ValueError
 
+        pcode = pcode.rstrip('0')
+        log.info("Start crawling %s" % pname)
         urlcode = u''
         for letter in pname:
             urlcode += '%%u%x' % ord(letter)
