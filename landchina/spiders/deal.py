@@ -59,6 +59,7 @@ class Mapper(object):
         self.where = where
         self.begin = begin
         self.end = end
+        self.phandle = None
         self.curr = None
 
     def get_province(self):
@@ -73,8 +74,14 @@ class Mapper(object):
         for letter in pname:
             urlcode += '%%u%x' % ord(letter)
 
-        return Province(pname, pcode, urlcode)
+        self.phandle = Province(pname, pcode, urlcode)
+        return self.prvn
 
+    @property
+    def prvn(self):
+        if self.phandle:
+            return self.phandle
+        return self.get_province()
 
     def iterurl(self, prvn):
         start = datetime.datetime.strptime(self.begin, "%Y-%m").date()
@@ -99,8 +106,7 @@ class Mapper(object):
                 curr = curr.replace(year=curr.year+1, month=1)
 
     def itercellurl(self):
-        prvn = self.get_province()
-        for url in self.iterurl(prvn):
+        for url in self.iterurl(self.prvn):
             page = Page(url, self.driver)
             while page:
                 for cellurl in page.fetchall():
@@ -175,8 +181,8 @@ class LandDealSpider(Spider):
         self.driver = webdriver.Chrome(service_args=service_args)
         self.driver.implicitly_wait(10)
 
-        self.where = where
         self.mapper = Mapper(self.driver, where, begin, end)
+        self.prvn = self.mapper.prvn
         super(LandDealSpider, self).__init__(name, **kwargs)
 
     def close(self, reason):

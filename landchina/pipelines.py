@@ -56,7 +56,7 @@ class SaveExcelPipeline(object):
         date = item['qy_time']
         r = re.compile(u'[0-9]\d*年[0-9]\d*月')
         date = re.search(r, date).group(0)
-        filename = '-'.join([spider.where, date])
+        filename = '-'.join([spider.prvn.name, date])
         self.save_to_file(filename, item)
         return item
 
