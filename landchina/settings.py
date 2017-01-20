@@ -41,7 +41,8 @@ CELL_MAP = {
     'qy_time': '#mainModuleContainer_1855_1856_ctl00_ctl00_p1_f1_r14_c4_ctrl'
 }
 
-PROVINCE_MAP = json.loads('location.json')
+with open('location.json', 'r') as f:
+        PROVINCE_MAP = json.load(f)
 
 # PROVINCE_MAP = {
     # u'北京市':   '11',

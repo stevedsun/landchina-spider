@@ -130,8 +130,11 @@ class Page(object):
         log.info("Fetching Page: %s ... " % page_no)
 
     def get_max_page(self):
-        paper = self.driver.find_element_by_class_name('pager')
-        self.page_max = int(re.search(r'[0-9]\d*', paper.text).group(0))
+        try:
+            paper = self.driver.find_element_by_class_name('pager')
+            self.page_max = int(re.search(r'[0-9]\d*', paper.text).group(0))
+        except NoSuchElementException:
+            self.page_max = 1
 
     def go_to_next(self):
         if self.page_no >= self.page_max:
