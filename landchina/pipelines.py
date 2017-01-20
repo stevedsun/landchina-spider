@@ -16,8 +16,8 @@ class SaveExcelPipeline(object):
 
     def gc_old_xls(self):
         if len(self.filenames) > 3:
-            del self.handler[0]
-            self.handler = self.handler[1:]
+            del self.handlers[0]
+            self.handlers = self.handlers[1:]
 
     def save_to_file(self, filename, item):
         if filename not in self.filenames:
