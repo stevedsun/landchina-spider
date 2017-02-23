@@ -15,8 +15,8 @@ DOWNLOADER_MIDDLEWARES = {
 
 ITEM_PIPELINES = {'landchina.pipelines.SaveExcelPipeline': 1}
 
-
-BASE_URL = u'http://www.landchina.com/default.aspx?tabid=263&wmguid=75c72564-ffd9-426a-954b-8ac2df0903b7&p=9f2c3acd-0256-4da2-a659-6949c4671a2a%3A{start}~{end}%7C42ad98ae-c46a-40aa-aacc-c0884036eeaf%{province}'
+BASE_URL = u'http://www.landchina.com/default.aspx?tabid=263&wmguid=75c72564-ffd9-426a-954b-8ac2df0903b7&p=9f2c3acd' \
+           u'-0256-4da2-a659-6949c4671a2a%3A{start}~{end}%7C42ad98ae-c46a-40aa-aacc-c0884036eeaf%{province} '
 
 PROVINCE_BASE = u'3A{value}%u2593%7E{key}'
 

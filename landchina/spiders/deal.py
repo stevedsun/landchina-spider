@@ -1,19 +1,20 @@
 # coding: utf-8
-import datetime
-import time
-import re
-import logging
 import calendar
+import datetime
+import logging
+import re
+import time
 
-from selenium import webdriver
-from scrapy.spiders import Spider
 from scrapy.http import Request
+from scrapy.spiders import Spider
+from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
 
 from landchina.items import DealResult
 from landchina.settings import BASE_URL, PROVINCE_MAP, PROVINCE_BASE, CELL_MAP
 
 log = logging.getLogger(__name__)
+
 
 class BreakPointTrack(object):
     last_time = time.time()
@@ -37,23 +38,22 @@ class BreakPointTrack(object):
             time=datetime.datetime.now(),
             url=self.url,
             page=self.page_no,
-            cost= now - self.get_last()
+            cost=now - self.get_last()
         ))
 
         self.set_last(now)
 
-class Province(object):
 
+class Province(object):
     def __init__(self, name, code, urlcode):
         self.name = name
         self.code = code
         self.urlcode = urlcode
         self.pcode = PROVINCE_BASE.format(key=self.urlcode,
-                                         value=self.code)
+                                          value=self.code)
 
 
 class Mapper(object):
-
     def __init__(self, driver, where, begin, end):
         self.driver = driver
         self.where = where
@@ -101,9 +101,9 @@ class Mapper(object):
                                   end=to_date)
 
             try:
-                curr = curr.replace(month=curr.month+1)
+                curr = curr.replace(month=curr.month + 1)
             except ValueError:
-                curr = curr.replace(year=curr.year+1, month=1)
+                curr = curr.replace(year=curr.year + 1, month=1)
 
     def itercellurl(self):
         for url in self.iterurl(self.prvn):
@@ -122,7 +122,6 @@ class Mapper(object):
 
 
 class Page(object):
-
     def __init__(self, url, driver, page_no=1, page_max=0):
         self.url = url
         self.page_max = page_max
@@ -145,10 +144,11 @@ class Page(object):
     def go_to_next(self):
         if self.page_no >= self.page_max:
             return None
-        log.info("==> Skipping to Page: %s ... " % (self.page_no+1))
-        self.driver.execute_script("document.getElementById('TAB_QuerySubmitPagerData').setAttribute('value', %s)" % (self.page_no+1))
+        log.info("==> Skipping to Page: %s ... " % (self.page_no + 1))
+        self.driver.execute_script(
+            "document.getElementById('TAB_QuerySubmitPagerData').setAttribute('value', %s)" % (self.page_no + 1))
         self.driver.execute_script("document.getElementById('mainForm').submit()")
-        return Page(self.url, self.driver, self.page_no+1, self.page_max)
+        return Page(self.url, self.driver, self.page_no + 1, self.page_max)
 
     def fetchall(self):
         try:
