@@ -13,6 +13,8 @@ DOWNLOADER_MIDDLEWARES = {
     'landchina.middlewares.randomua.RandomUserAgentMiddleware': 400
 }
 
+WEB_DRIVER_PATH = '/usr/local/bin/chromedriver'
+
 ITEM_PIPELINES = {'landchina.pipelines.SaveExcelPipeline': 1}
 
 BASE_URL = u'http://www.landchina.com/default.aspx?tabid=263&wmguid=75c72564-ffd9-426a-954b-8ac2df0903b7&p=9f2c3acd' \

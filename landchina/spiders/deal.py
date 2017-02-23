@@ -11,7 +11,7 @@ from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
 
 from landchina.items import DealResult
-from landchina.settings import BASE_URL, PROVINCE_MAP, PROVINCE_BASE, CELL_MAP
+from landchina.settings import BASE_URL, PROVINCE_MAP, PROVINCE_BASE, CELL_MAP, WEB_DRIVER_PATH
 
 log = logging.getLogger(__name__)
 
@@ -178,7 +178,7 @@ class LandDealSpider(Spider):
 
         service_args = ['--load-images=false', '--disk-cache=true']
         # self.driver = webdriver.PhantomJS(service_args=service_args)
-        self.driver = webdriver.Chrome(service_args=service_args)
+        self.driver = webdriver.Chrome(WEB_DRIVER_PATH, service_args=service_args)
         self.driver.implicitly_wait(10)
 
         self.mapper = Mapper(self.driver, where, begin, end)
