@@ -34,7 +34,7 @@ class BreakPointTrack(object):
 
     def save(self):
         now = time.time()
-        log.info("** Finshed page: {page}, cost: {cost} seconds **".format(
+        log.info("** Finished page: {page}, cost: {cost} seconds **".format(
             time=datetime.datetime.now(),
             url=self.url,
             page=self.page_no,
@@ -45,12 +45,12 @@ class BreakPointTrack(object):
 
 
 class Province(object):
-    def __init__(self, name, code, urlcode):
+    def __init__(self, name, code, url_code):
         self.name = name
         self.code = code
-        self.urlcode = urlcode
-        self.pcode = PROVINCE_BASE.format(key=self.urlcode,
-                                          value=self.code)
+        self.url_code = url_code
+        self.p_code = PROVINCE_BASE.format(key=self.url_code,
+                                           value=self.code)
 
 
 class Mapper(object):
@@ -59,28 +59,28 @@ class Mapper(object):
         self.where = where
         self.begin = begin
         self.end = end
-        self.phandle = None
+        self.province_handler = None
         self.curr = None
 
     def get_province(self):
-        pcode, pname = self.where, PROVINCE_MAP.get(self.where, None)
-        if not pcode:
+        p_code, p_name = self.where, PROVINCE_MAP.get(self.where, None)
+        if not p_code:
             log.info("** Province (%s) NOT FOUND !! **" % self.where)
             raise ValueError
 
-        pcode = pcode.strip().rstrip('0')
-        log.info("::::::::::::::::::::::::: %s :::::::::::::::::::::::::" % pname)
-        urlcode = u''
-        for letter in pname:
-            urlcode += '%%u%x' % ord(letter)
+        p_code = p_code.strip().rstrip('0')
+        log.info("::::::::::::::::::::::::: %s :::::::::::::::::::::::::" % p_name)
+        url_code = u''
+        for letter in p_name:
+            url_code += '%%u%x' % ord(letter)
 
-        self.phandle = Province(pname, pcode, urlcode)
+        self.province_handler = Province(p_name, p_code, url_code)
         return self.prvn
 
     @property
     def prvn(self):
-        if self.phandle:
-            return self.phandle
+        if self.province_handler:
+            return self.province_handler
         return self.get_province()
 
     def iterurl(self, prvn):
@@ -96,7 +96,7 @@ class Mapper(object):
             to_date = '{year}-{month}-{day}'.format(year=curr.year,
                                                     month=curr.month,
                                                     day=month_last)
-            yield BASE_URL.format(province=prvn.pcode,
+            yield BASE_URL.format(province=prvn.p_code,
                                   start=from_date,
                                   end=to_date)
 
@@ -109,8 +109,8 @@ class Mapper(object):
         for url in self.iterurl(self.prvn):
             page = Page(url, self.driver)
             while page:
-                for cellurl in page.fetchall():
-                    yield cellurl
+                for cell_url in page.fetchall():
+                    yield cell_url
                 BreakPointTrack(url, page.page_no)
                 page = page.go_to_next()
 
@@ -177,7 +177,6 @@ class LandDealSpider(Spider):
             where = where.decode('utf-8')
 
         service_args = ['--load-images=false', '--disk-cache=true']
-        # self.driver = webdriver.PhantomJS(service_args=service_args)
         self.driver = webdriver.Chrome(WEB_DRIVER_PATH, service_args=service_args)
         self.driver.implicitly_wait(10)
 
