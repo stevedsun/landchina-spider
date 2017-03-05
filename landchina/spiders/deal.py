@@ -213,4 +213,10 @@ class LandDealSpider(Spider):
                 if item[k] == u'1900-01-01':
                     item[k] = u' '
 
+        # Update #001
+        item['where_code'] = self.prvn.code
+        item['where'] = self.prvn.name
+        item['parent_code'] = ''.join([self.prvn.code[:2], "0000"])
+        item['parent_where'] = PROVINCE_MAP.get(item['parent_code'], "?")
+
         return [item]
