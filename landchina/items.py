@@ -3,6 +3,10 @@ from scrapy.item import Item, Field
 
 class DealResult(Item):
 
+    where = Field()
+    where_code = Field()
+    parent_where = Field()
+    parent_code = Field()
     domain = Field()
     name = Field()
     addr = Field()

@@ -45,8 +45,9 @@ class BreakPointTrack(object):
 
 
 class Province(object):
-    def __init__(self, name, code, url_code):
+    def __init__(self, name, lite_code, code, url_code):
         self.name = name
+        self.lite_code = lite_code
         self.code = code
         self.url_code = url_code
         self.p_code = PROVINCE_BASE.format(key=self.url_code,
@@ -68,13 +69,13 @@ class Mapper(object):
             log.info("** Province (%s) NOT FOUND !! **" % self.where)
             raise ValueError
 
-        p_code = p_code.strip().rstrip('0')
+        lite_code = p_code.strip().rstrip('0')
         log.info("::::::::::::::::::::::::: %s :::::::::::::::::::::::::" % p_name)
         url_code = u''
         for letter in p_name:
             url_code += '%%u%x' % ord(letter)
 
-        self.province_handler = Province(p_name, p_code, url_code)
+        self.province_handler = Province(p_name, lite_code, p_code, url_code)
         return self.prvn
 
     @property
@@ -96,7 +97,7 @@ class Mapper(object):
             to_date = '{year}-{month}-{day}'.format(year=curr.year,
                                                     month=curr.month,
                                                     day=month_last)
-            yield BASE_URL.format(province=prvn.p_code,
+            yield BASE_URL.format(province=prvn.lite_code,
                                   start=from_date,
                                   end=to_date)
 
