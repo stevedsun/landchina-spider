@@ -18,7 +18,7 @@ class UrlMapperTestCase(unittest.TestCase):
         start_time = '2009-1-1'
         end_time = '2009-3-1'
         for prvn in self.obj.iterprvn(prvns):
-            for url in self.obj.iterurl(prvn, start_time, end_time):
+            for url in self.obj.iter_url(prvn, start_time, end_time):
                 self.assertEqual(url is not None, True)
 
     def test_req_map(self):
@@ -26,10 +26,10 @@ class UrlMapperTestCase(unittest.TestCase):
         start_time = '2009-1-1'
         end_time = '2009-3-1'
         for prvn in self.obj.iterprvn(prvns):
-            for url in self.obj.iterurl(prvn, start_time, end_time):
+            for url in self.obj.iter_url(prvn, start_time, end_time):
                 req = Request(url)
                 self.assertEqual(isinstance(req, Request), True)
 
     def test_cell_url_map(self):
-        for url in self.obj.itercellurl():
+        for url in self.obj.iter_cell_url():
             print url

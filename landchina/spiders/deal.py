@@ -12,6 +12,7 @@ from selenium.common.exceptions import NoSuchElementException
 
 from landchina.items import DealResult
 from landchina.settings import BASE_URL, PROVINCE_MAP, PROVINCE_BASE, CELL_MAP, WEB_DRIVER_PATH
+from landchina import exception
 
 log = logging.getLogger(__name__)
 
@@ -51,7 +52,7 @@ class Province(object):
         self.code = code
         self.url_code = url_code
         self.p_code = PROVINCE_BASE.format(key=self.url_code,
-                                           value=self.code)
+                                           value=self.lite_code)
 
 
 class Mapper(object):
@@ -67,7 +68,7 @@ class Mapper(object):
         p_code, p_name = self.where, PROVINCE_MAP.get(self.where, None)
         if not p_code:
             log.info("** Province (%s) NOT FOUND !! **" % self.where)
-            raise ValueError
+            raise exception.AreaNotFound
 
         lite_code = p_code.strip().rstrip('0')
         log.info("::::::::::::::::::::::::: %s :::::::::::::::::::::::::" % p_name)
@@ -84,7 +85,7 @@ class Mapper(object):
             return self.province_handler
         return self.get_province()
 
-    def iterurl(self, prvn):
+    def iter_url(self, prvn):
         start = datetime.datetime.strptime(self.begin, "%Y-%m").date()
         stop = datetime.datetime.strptime(self.end, "%Y-%m").date()
         curr = start
@@ -97,7 +98,7 @@ class Mapper(object):
             to_date = '{year}-{month}-{day}'.format(year=curr.year,
                                                     month=curr.month,
                                                     day=month_last)
-            yield BASE_URL.format(province=prvn.lite_code,
+            yield BASE_URL.format(province=prvn.p_code,
                                   start=from_date,
                                   end=to_date)
 
@@ -106,8 +107,8 @@ class Mapper(object):
             except ValueError:
                 curr = curr.replace(year=curr.year + 1, month=1)
 
-    def itercellurl(self):
-        for url in self.iterurl(self.prvn):
+    def iter_cell_url(self):
+        for url in self.iter_url(self.prvn):
             page = Page(url, self.driver)
             while page:
                 for cell_url in page.fetchall():
@@ -115,9 +116,9 @@ class Mapper(object):
                 BreakPointTrack(url, page.page_no)
                 page = page.go_to_next()
 
-    def iterreq(self):
-        for cellurl in self.itercellurl():
-            request = Request(cellurl)
+    def iter_request(self):
+        for cell_url in self.iter_cell_url():
+            request = Request(cell_url)
             request.meta['PhantomJS'] = True
             yield request
 
@@ -156,7 +157,7 @@ class Page(object):
             items = self.driver.find_elements_by_css_selector('.queryCellBordy a')
         except NoSuchElementException:
             log.error("** TABLE NOT FOUND in url: %s **" % self.url)
-            raise StopIteration
+            raise exception.TableNotFound
 
         for item in items:
             url = item.get_attribute('href')
@@ -189,7 +190,7 @@ class LandDealSpider(Spider):
         self.driver.quit()
 
     def start_requests(self):
-        return self.mapper.iterreq()
+        return self.mapper.iter_request()
 
     def parse(self, response):
         item = DealResult()
@@ -211,8 +212,6 @@ class LandDealSpider(Spider):
                     item[k] = value[0] if value else u''
             else:
                 item[k] = value[0] if value else u''
-                if item[k] == u'1900-01-01':
-                    item[k] = u' '
 
         # Update #001
         item['where_code'] = self.prvn.code
