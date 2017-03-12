@@ -2,7 +2,8 @@
 
 import random
 import logging
-from fake_useragent import UserAgent, FakeUserAgentError
+
+from fake_useragent import UserAgent
 from scrapy.downloadermiddlewares.useragent import UserAgentMiddleware
 log = logging.getLogger(__name__)
 
@@ -13,7 +14,8 @@ class RandomUserAgentMiddleware(UserAgentMiddleware):
         self.user_agent = user_agent
         try:
             self.faker = UserAgent()
-        except FakeUserAgentError:
+        except Exception as e:
+            log.debug("Fake-useragent error, use default. (%s)" % e.message)
             self.faker = None
 
     def process_request(self, request, spider):
@@ -26,7 +28,7 @@ class RandomUserAgentMiddleware(UserAgentMiddleware):
         log.debug("Current UserAgent: %s" % ua)
         request.headers.setdefault('User-Agent', ua)
 
-    user_agent_list = [\
+    user_agent_list = [
         "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.1 "
         "(KHTML, like Gecko) Chrome/22.0.1207.1 Safari/537.1",
         "Mozilla/5.0 (X11; CrOS i686 2268.111.0) AppleWebKit/536.11 "
